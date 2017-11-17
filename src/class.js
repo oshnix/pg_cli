@@ -33,15 +33,7 @@ const fieldsFullnames = {
 };
 
 module.exports.init_classes = (vorpal, connection) => {
-    util.createSelectCommand(vorpal, 'class',(args, callback) => {
-        connection.client.query(objectClasses.select(args.options)).then(response => {
-            util.logRows(response);
-            callback();
-        }).catch(error => {
-            console.error(error);
-            callback();
-        })
-    }, fieldsShortnames);
+    util.createSelectCommand(vorpal, 'class', args => connection.client.query(objectClasses.select(args.options)), fieldsShortnames);
     vorpal
         .command('class insert <name>', 'insert into class')
         .action((args, callback) => {

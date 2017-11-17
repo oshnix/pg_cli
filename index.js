@@ -3,6 +3,7 @@ const vorpal = require('vorpal')();
 const { Pool } = require('pg');
 const {init_classes} = require('./src/class');
 const {init_types} = require('./src/objectTypes');
+const {init_common} = require('./src/common');
 
 /*
 const redis = require("redis"), client = redis.createClient();
@@ -21,7 +22,7 @@ pool.on('error', error => {
 
 init_classes(vorpal, connection);
 init_types(vorpal, connection);
-//init_commons(vorpal);
+init_common(vorpal, connection);
 //init_galaxies(vorpal);
 
 pool.connect().then(client => {

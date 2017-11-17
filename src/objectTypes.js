@@ -35,17 +35,7 @@ const fieldsFullnames = {
 };
 
 module.exports.init_types = (vorpal, connection) => {
-    util.createSelectCommand(vorpal, 'type', (args, callback) => {
-        connection.client.query(objectTypes.select(args.options))
-            .then(response => {
-                util.logRows(response);
-                callback()
-            })
-            .catch(error => {
-                util.logError(error);
-                callback()
-            })
-    }, fieldsShortnames);
+    util.createSelectCommand(vorpal, 'type', args =>  connection.client.query(objectTypes.select(args.options)), fieldsShortnames);
     vorpal
         .command('type insert <type_name>', 'insert object type')
         .option('-c, --class-id <class_id>', 'specifies class id')

@@ -58,7 +58,7 @@ let util = {
         if(error.message !== undefined) console.error(colors.green('\tMessage: ') + colors.white(error.message));
         if(error.detail !== undefined) console.error(colors.green('\tDetails: ') + colors.white(error.detail));
     },
-    createSelectCommand(vorpal, name, action, fieldsShortnames){
+    createSelectCommand(vorpal, name, promise, fieldsShortnames){
         vorpal
             .command(name + ' select', `select from ${name}`)
             .option('-i, --id <id>', 'select by id')
@@ -76,8 +76,16 @@ let util = {
                 }
                 return true;
             })
-            .action(action);
-        return vorpal;
+            .action((args, callback) => {
+                promise(args)
+                    .then(response => {
+                        util.logRows(response);
+                        callback();
+                    }).catch(error => {
+                        console.error(error);
+                        callback();
+                    })
+                });
     },
     parseSelectParams(params, field, fieldsFullnames){
         let retVal = {cond: "", values: [], orderBy: "", limit: ""};
