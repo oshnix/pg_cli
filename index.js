@@ -1,9 +1,19 @@
 require('dotenv').config();
 const vorpal = require('vorpal')();
-const { Pool } = require('pg');
+const {Pool, types} = require('pg');
 const {init_classes} = require('./src/class');
 const {init_types} = require('./src/objectTypes');
 const {init_common} = require('./src/common');
+const {init_galaxies} = require('./src/galaxies')
+
+types.setTypeParser(16438, val => {
+    val = val.substr(1, val.length -2);
+    val = val.split(',');
+    return {
+        x: parseFloat(val[0]),
+        y: parseFloat(val[1])
+    }
+});
 
 /*
 const redis = require("redis"), client = redis.createClient();
@@ -23,7 +33,7 @@ pool.on('error', error => {
 init_classes(vorpal, connection);
 init_types(vorpal, connection);
 init_common(vorpal, connection);
-//init_galaxies(vorpal);
+init_galaxies(vorpal, connection);
 
 pool.connect().then(client => {
     connection.client = client;
