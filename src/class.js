@@ -43,20 +43,7 @@ insertFields.name = {
 
 module.exports.init_classes = (vorpal, connection) => {
     util.createSelectCommand(vorpal, 'class', args => connection.client.query(objectClasses.select(args.options)), fieldsShortnames);
-    util.createInsertCommand(vorpal, insertFields, 'class', args => connection.client.query(objectClasses.insert(args.options)), 'insert new object class into object_classes');
-    /*
-    vorpal
-        .command('class insert <name>', 'insert into class')
-        .action((args, callback) => {
-            connection.client.query(objectClasses.insert(args.name)).then(response => {
-                util.logOperation(response);
-                util.logRows(response);
-                callback();
-            }).catch(error => {
-                console.error(error);
-                callback();
-            });
-        });
-    */
+    util.createInsertCommand(vorpal, insertFields, 'class',
+            args => connection.client.query(objectClasses.insert(args.options)), 'insert new object class into object_classes');
     util.createDeleteCommand(vorpal, 'class', args => connection.client.query(objectClasses.delete(args)));
 };

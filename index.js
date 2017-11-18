@@ -4,7 +4,7 @@ const {Pool, types} = require('pg');
 const {init_classes} = require('./src/class');
 const {init_types} = require('./src/objectTypes');
 const {init_common} = require('./src/common');
-const {init_galaxies} = require('./src/galaxies')
+const {init_galaxies} = require('./src/galaxies');
 
 /**
  * Parser for user type (coordinates)
@@ -31,7 +31,6 @@ pool.on('error', error => {
     console.error(error);
     process.exit(-1);
 });
-
 
 init_classes(vorpal, connection);
 init_types(vorpal, connection);

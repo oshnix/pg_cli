@@ -8,6 +8,12 @@ let objectsCommon = {
             text: queryString,
             values
         }
+    },
+    insert(params){
+        return {
+            text: `INSERT INTO objects_common (object_name, type_id) VALUES ($1, $2) RETURNING *`,
+            values: [params.name, params['typeId']]
+        }
     }
 };
 module.exports.objectsCommon = objectsCommon;

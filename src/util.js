@@ -136,15 +136,17 @@ let util = {
         let temp = vorpal.command(`${name} insert`, description);
         for(let i in options){
             let option = options[i];
-            temp = temp.option(`-${option.short}, --${option.full} <${option.name}>`, option.description,
+            temp = temp.option(`-${option.short}, --${option.name} <${option.name}>`, option.description,
                 (option.set !== undefined && Array.prototype.isPrototypeOf(option.set) ? option.set : undefined))
         }
         temp
             .validate(args => {
-                //TODO check for set
                 for(let i in options){
                     let option = options[i];
-                    if(args.options[option.name] === undefined || typeof args.options[option.name] !== option.type){
+                    if(option.set !== undefined && ! option.set.indexOf(args.options[option.name])){
+                        return colors.red(`Option ${option.name} can be only one of values from ${prettyjson.render(option.set)}`)
+                    }
+                    else if(args.options[option.name] === undefined || typeof args.options[option.name] !== option.type){
                         return colors.red(`Option ${option.name} is not present or has wrong type (${option.type} expected)`)
                     }
                 }
