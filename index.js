@@ -6,6 +6,9 @@ const {init_types} = require('./src/objectTypes');
 const {init_common} = require('./src/common');
 const {init_galaxies} = require('./src/galaxies')
 
+/**
+ * Parser for user type (coordinates)
+ */
 types.setTypeParser(16438, val => {
     val = val.substr(1, val.length -2);
     val = val.split(',');

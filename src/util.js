@@ -6,6 +6,7 @@ let util = {
      * @param table
      * @param {Object<null>} obj - should be object created from null
      */
+    //TODO find usage in project or delete
     insertCreator(table, obj){
         if(typeof obj !== 'object' || obj == null){
             throw new Error('Argument should be an object');
@@ -28,6 +29,9 @@ let util = {
             text: string,
             values
         }
+    },
+    isCreatedFromNull(object){
+        return typeof object === 'object' && object != null && !Object.isPrototypeOf(object);
     },
     createWhere(params) {
         let cond = [], values = [], i = 1;
@@ -122,6 +126,40 @@ let util = {
                     .catch(error => {
                         this.logError(error);
                         callback();
+                    })
+            })
+    },
+    createInsertCommand(vorpal, options, name, promise, description){
+        if(!this.isCreatedFromNull(options)){
+            throw new Error('Object is not null-prototyped');
+        }
+        let temp = vorpal.command(`${name} insert`, description);
+        for(let i in options){
+            let option = options[i];
+            temp = temp.option(`-${option.short}, --${option.full} <${option.name}>`, option.description,
+                (option.set !== undefined && Array.prototype.isPrototypeOf(option.set) ? option.set : undefined))
+        }
+        temp
+            .validate(args => {
+                //TODO check for set
+                for(let i in options){
+                    let option = options[i];
+                    if(args.options[option.name] === undefined || typeof args.options[option.name] !== option.type){
+                        return colors.red(`Option ${option.name} is not present or has wrong type (${option.type} expected)`)
+                    }
+                }
+                return true
+        })
+            .action((args, callback) => {
+                promise(args)
+                    .then(response => {
+                        this.logOperation(response);
+                        this.logRows(response);
+                        callback();
+                    })
+                    .catch(error => {
+                        this.logError(error);
+                        callback()
                     })
             })
     }

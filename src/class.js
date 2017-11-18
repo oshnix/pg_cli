@@ -9,10 +9,10 @@ let objectClasses = {
             values
         }
     },
-    insert(name){
+    insert(params){
         return {
             text: "INSERT INTO objects_classes (object_class_name) VALUES($1) RETURNING *",
-            values: [name]
+            values: [params.name]
         }
     },
     delete(params){
@@ -32,8 +32,19 @@ const fieldsFullnames = {
     'name': 'object_class_name'
 };
 
+let insertFields = Object.create(null);
+insertFields.name = {
+    short: 'n',
+    full: 'name',
+    name: 'name',
+    description: 'name of new class',
+    type: 'string'
+};
+
 module.exports.init_classes = (vorpal, connection) => {
     util.createSelectCommand(vorpal, 'class', args => connection.client.query(objectClasses.select(args.options)), fieldsShortnames);
+    util.createInsertCommand(vorpal, insertFields, 'class', args => connection.client.query(objectClasses.insert(args.options)), 'insert new object class into object_classes');
+    /*
     vorpal
         .command('class insert <name>', 'insert into class')
         .action((args, callback) => {
@@ -46,6 +57,6 @@ module.exports.init_classes = (vorpal, connection) => {
                 callback();
             });
         });
-
+    */
     util.createDeleteCommand(vorpal, 'class', args => connection.client.query(objectClasses.delete(args)));
 };
