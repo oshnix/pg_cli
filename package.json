@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "colors": "^1.1.2",
+    "lorem-ipsum": "^1.0.4",
     "pg": "^7.4.0",
     "prettyjson": "^1.2.1",
     "redis": "^2.8.0",
