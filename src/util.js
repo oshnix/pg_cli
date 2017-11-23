@@ -2,34 +2,6 @@ const prettyjson = require('prettyjson');
 const colors = require('colors');
 
 let util = {
-    /**
-     * @param table
-     * @param {Object<null>} obj - should be object created from null
-     */
-    //TODO find usage in project or delete
-    insertCreator(table, obj){
-        if(typeof obj !== 'object' || obj == null){
-            throw new Error('Argument should be an object');
-        }
-        if(Object.isPrototypeOf(obj)){
-            throw new Error('Prototype of object should be null');
-        }
-        let values = [], keys = [], count = 1, prepVals = [];
-        let string = `INSERT INTO ${table}`;
-        for(let key in obj){
-            keys.push(key);
-            values.push(obj[key])
-            prepVals.push(`\$${count++}`)
-        }
-        if(count == 1){
-            throw new Error('Arguments list is empty')
-        }
-        string += ` (${keys.join(",")}) VALUES (${prepVals.join(",")});`
-        return {
-            text: string,
-            values
-        }
-    },
     isCreatedFromNull(object){
         return typeof object === 'object' && object != null && !Object.isPrototypeOf(object);
     },
