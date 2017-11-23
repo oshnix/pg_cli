@@ -20,12 +20,10 @@ types.setTypeParser(16438, val => {
     }
 });
 
-/*
-const redis = require("redis"), client = redis.createClient();
-client.set("string key", "string val", redis.print);
-*/
 
-let connection = {client: null};
+const redis = require("redis"), client = redis.createClient(), sub = redis.createClient();
+
+let connection = {client: null, redisClient: client, subClient: sub};
 const pool = new Pool();
 
 pool.on('error', error => {

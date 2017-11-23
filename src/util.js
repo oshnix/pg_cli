@@ -64,7 +64,7 @@ let util = {
     },
     createSelectCommand(vorpal, name, promise, fieldsShortnames){
         vorpal
-            .command(name + ' select', `select from ${name}`)
+            .command(`${name} select`, `select from ${name}`)
             .option('-i, --id <id>', 'select by id')
             .option('-l, --limit <count>', 'limit number of selected strings')
             .option('-o, --order <order>', 'output data in chosen order', fieldsShortnames)
