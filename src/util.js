@@ -53,7 +53,15 @@ let util = {
                 return true;
             })
             .action((args, callback) => {
-                promise(args)
+                let key;
+                if(args.options.id){
+                    key = `${name}${args.options.id}`;
+                    delete args.options.limit;
+                    delete args.options.order;
+                } else {        console.log(params);
+                    key = null;
+                }
+                promise(args, key)
                     .then(response => {
                         util.logRows(response);
                         callback();
@@ -63,12 +71,40 @@ let util = {
                     })
                 });
     },
+    createRedisPromise(connection, query){
+        return (args, key) => {
+            if(key){
+                return new Promise((resolve, reject) => {
+                    connection.redisClient.get(key, (err, response) => {
+                        if(err){
+                            reject(err);
+                            return;
+                        }
+                        if(response){
+                            resolve({rows: [JSON.parse(response)]});
+                        } else {
+                            connection.client.query(query(args.options))
+                                .then(response => {
+                                    connection.redisClient.set(key, JSON.stringify(response.rows[0]), 'EX', 30);
+                                    resolve(response)
+                                })
+                                .catch(error => {
+                                    reject(error);
+                                })
+                        }
+                    })
+                })
+            } else {
+                return connection.client.query(query(args.options));
+            }
+        }
+    },
     parseSelectParams(params, field, fieldsFullnames){
         let retVal = {cond: "", values: [], orderBy: "", limit: ""};
         if(params.id !== undefined){
             let condVals = this.createWhere([{field, operator: "=", value: params.id}])
             retVal.cond = condVals.cond;
-            retVal.values = condVals.values
+            retVal.values = condVals.values;
             if(params.limit !== undefined || params.order !== undefined){
                 console.warn(colors.yellow('Warning:\tID is present. Order by and limit options are ignored'));
             }

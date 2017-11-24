@@ -42,7 +42,8 @@ insertFields.name = {
 };
 
 module.exports.init_classes = (vorpal, connection) => {
-    util.createSelectCommand(vorpal, 'class', args => connection.client.query(objectClasses.select(args.options)), fieldsShortnames);
+    let promise = util.createRedisPromise(connection, objectClasses.select);
+    util.createSelectCommand(vorpal, 'class', promise, fieldsShortnames);
     util.createInsertCommand(vorpal, insertFields, 'class',
             args => connection.client.query(objectClasses.insert(args.options)), 'insert new object class into object_classes');
     util.createDeleteCommand(vorpal, 'class', args => connection.client.query(objectClasses.delete(args)));

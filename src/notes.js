@@ -50,7 +50,6 @@ module.exports.init_notes = (vorpal, connection) => {
                             scientist: insert['scientist_id'],
                             object: insert['object_id']}
                     }));
-                    console.log("COMMIT");
                 }
             })
     });
@@ -79,7 +78,10 @@ module.exports.init_notes = (vorpal, connection) => {
                             callback();
                         });
                 } else {
-                    util.logRows({rows: [JSON.parse(response)]});
+                    let note = JSON.parse(response);
+                    if(note.shouldCommit) delete note.shouldCommit;
+                    util.logRows({rows: [note]});
+                    callback();
                 }
             });
         });
@@ -92,18 +94,15 @@ module.exports.init_notes = (vorpal, connection) => {
             let cont = args => {
                 let key = `note${args.options.scientist}${args.options.object}`;
                 connection.redisClient.get(key, (err, response) => {
-                    if (response !== null) {
+                    if (response) {
                         let note = JSON.parse(response);
-                        if (note.shouldCommit !== undefined) {
-                            note['note_body'] = args.text;
-                            note.shouldCommit = true;
-                            connection.redisClient.multi()
-                                .set(key, JSON.stringify(note))
-                                .set(`shadow:${key}`, "", 'EX', 30).exec();
-                            callback();
-                            return;
-                        }
-                        connection.redisClient.delete(key);
+                        note['note_body'] = args.text;
+                        note.shouldCommit = true;
+                        connection.redisClient.multi()
+                            .set(key, JSON.stringify(note))
+                            .set(`shadow:${key}`, "", 'EX', 30).exec();
+                        callback();
+                        return;
                     }
                     connection.client.query(notes.insertOrUpdate(args))
                         .then(response => {
